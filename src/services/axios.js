@@ -1,58 +1,44 @@
 import axios from 'axios';
 
-// create axios instance
+const instance = axios.create({
+  baseURL: process.env.REACT_APP_BASE_URL,
+});
 
-export default (baseURL) => {
-  const instance = axios.create({
-    baseURL,
-  });
-
-  //request interceptor to add the auth token header to requests
-  instance.interceptors.request.use((config) => {
-    // checking if the access token exist in the localStorage
-    //   const accessToken = store.getState().auth.token;
-    //   config.headers = {
-    //     'Content-Type': config.headers['Content-Type']
-    //       ? config.headers['Content-Type']
-    //       : 'application/json',
-    //     Authorization: `Bearer ${accessToken}`,
-    //   };
+instance.interceptors.request.use(
+  (config) => {
+    // const admin = JSON.parse(localStorage.getItem('admin'));
+    // if (admin) {
+    //   config.headers.Authorization = `Bearer ${admin.token}`;
+    // }
     return config;
-  });
+  },
+  (error) => {
+    return Promise.reject(error);
+  },
+);
 
-  // response interceptor to refresh token on receiving token expired error
-  instance.interceptors.response.use(
-    (response) => response,
-    async (error) => {
-      //   if (error.response.status === 401) {
-      //     // logging user out
-      //     store.dispatch(authActions.logout());
-      //     return;
-      //   }
-      //   if (error.response.status === 500) {
-      //     errorNoitif(error?.response?.data?.msg);
-      //   }
-      //   if (error.response.status === 404) {
-      //     errorNoitif(error?.response?.data?.msg);
-      //   }
-      //   if (error.response.status === 400) {
-      //     errorNoitif(error?.response?.data?.msg);
-      //   }
+instance.interceptors.response.use(
+  (response) => {
+    // const newAccessToken = response.headers['x-access-token'];
 
-      //   if (error.response.status === 403) {
-      //     errorNoitif(error?.response?.data?.msg);
-      //     window.location.replace(UNAUTHORIZED);
-      //   }
-      //   if (error.response) {
-      //     console.error(error.response);
-      //   } else if (error.request) {
-      //     errorNoitif('Internal server error');
-      //   } else {
-      //     errorNoitif('Internal server error');
-      //   }
-      return Promise.reject(error);
-    },
-  );
+    // if (newAccessToken) {
+    //   const admin = JSON.parse(localStorage.getItem('admin'));
+    //   localStorage.setItem('admin', JSON.stringify({ ...admin, token: newAccessToken }));
+    //   window.document.dispatchEvent(new Event('tokenUpdated'));
+    // }
 
-  return instance;
-};
+    return response;
+  },
+  (error) => {
+    // if (error.response.status === 401) {
+    //   localStorage.removeItem('admin');
+    //   window.location.replace('/');
+    // }
+    // if (error.response.status === 403) {
+    //   window.location.replace('/unauthorized');
+    // }
+    return Promise.reject(error);
+  },
+);
+
+export default instance;
